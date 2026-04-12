@@ -69,7 +69,11 @@
                     <i class="fas fa-users"></i>
                     <span>Barangay Residents</span></a>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link" href="admn_messages.php">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span>Messages</span></a>
+            </li>
             <!-- Divider -->
             <hr class="sidebar-divider">
 

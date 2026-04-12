@@ -41,314 +41,236 @@
     .search{
         text-align: center;
     }
+    .search-container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .pill-search {
+        border-radius: 50px !important;
+        padding-left: 45px;
+        border: 1px solid #ddd;
+    }
+    .search-icon-inside {
+        position: absolute;
+        left: 25px;
+        top: 18px;
+        z-index: 10;
+        color: #4e73df;
+    }
+
+    /* Stat Card Borders (Matching your image) */
+    .border-left-blue { border-left: 5px solid #4e73df !important; }
+    .border-left-green { border-left: 5px solid #1cc88a !important; }
+    .border-left-cyan { border-left: 5px solid #36b9cc !important; }
+    .border-left-orange { border-left: 5px solid #f6c23e !important; }
+
+    /* Button Styling */
+    .btn-pill {
+        border-radius: 50px;
+        padding: 8px 25px;
+    }
 </style>
 
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
-        <h1 class="mb-4 text-center">Barangay Residents Data</h1>
+<div class="container-fluid">
+    <h1 class="mb-4 text-center text-secondary" style="font-weight: 300;">Barangay Residents Data</h1>
 
-        <hr>
-        <br>
+    <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+            <div class="mb-3 text-left">
+                <button type="button" class="btn btn-primary btn-pill shadow-sm" data-toggle="modal" data-target="#addResidentModal">
+                    <i class="fas fa-plus"></i> Add New Barangay Resident
+                </button>
+            </div>
+        </div>
+    </div>
 
-        <!-- Page Heading -->
-                    
-        <div class="row"> 
-            <div class="col-md-9"> 
-                <div class="card">
-                    <div class="card-header bg-primary text-white"> Add New Barangay Resident</div>
-                    <div class="card-body">
-                        <form method="post" class="was-validated"> 
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label> Last Name: </label>
-                                        <input type="text" class="form-control" name="lname"  placeholder="Enter Last Name" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="mtop" >First Name: </label>
-                                        <input type="text" class="form-control" name="fname"  placeholder="Enter First Name" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col"> 
-                                    <div class="form-group">
-                                        <label class="mtop"> Middle Initial: </label>
-                                        <input type="text" class="form-control" name="mi" placeholder="Enter Middle Initial" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row"> 
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="mtop">Contact Number:</label>
-                                        <input type="tel" class="form-control" name="contact" maxlength="11" pattern="[0-9]{11}" placeholder="Enter Contact Number" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>Email: </label>
-                                        <input type="email" class="form-control" name="email"  placeholder="Enter Email" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>Password:</label>
-                                        <input type="password" class="form-control" id="password-field" name="password" placeholder="Enter Password" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label> House No: </label>
-                                        <input type="text" class="form-control" name="houseno"  placeholder="Enter House No." required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label> Street: </label>
-                                        <input type="text" class="form-control" name="street"  placeholder="Enter Street" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label> Barangay: </label>
-                                        <input type="text" class="form-control" name="brgy"  placeholder="Enter Barangay" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label> Municipality: </label>
-                                        <input type="text" class="form-control" name="municipal" placeholder="Enter Municipality" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="mtop">Birth Date: </label>
-                                        <input type="date" class="form-control" name="bdate" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="mtop">Birth Place </label>
-                                        <input type="text" class="form-control" name="bplace"  placeholder="Enter Birth Place" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="mtop">Nationality: </label>
-                                        <input type="text" class="form-control" name="nationality"  placeholder="Enter Nationality" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col"> 
-                                    <div class="form-group">
-                                        <label>Status: </label>
-                                        <select class="form-control" name="status" id="status" required>
-                                            <option value="">Choose your Status</option>
-                                            <option value="Single">Single</option>
-                                            <option value="Married">Married</option>
-                                            <option value="Widowed">Widowed</option>
-                                            <option value="Divorced">Divorced</option>
-                                        </select>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>Age</label>
-                                        <input type="number" class="form-control" name="age" placeholder="Enter Age" required>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                                <div class="col rb">
-                                    <div class="form-group">
-                                        <label class="mtop">Sex</label>
-                                        <select class="form-control" name="sex" id="sex" required>
-                                            <option value="">Choose your Sex</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                        </select>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>         
-                            </div>
-
-                            <div class="row">
-                                
-                                <div class="col"> 
-                                    <div class="form-group">
-                                        <label>Are you a registered voter? </label>
-                                        <select class="form-control" name="voter" id="regvote" required>
-                                            <option value="">...</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>                                    
-                                <div class="col"> 
-                                    <div class="form-group">
-                                        <label>Are you head of the family? </label>
-                                        <select class="form-control" name="family_role" id="famhead" required>
-                                            <option value="">...</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
-                                        <div class="valid-feedback">Valid.</div>
-                                        <div class="invalid-feedback">Please fill out this field.</div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <br>
-                                
-                            <input type="hidden" class="form-control" name="role" value="resident">
-                            <button class="btn btn-primary" type="submit" name="add_resident" style="width: 140px; font-size: 15px; border-radius:30px; margin-left:40%;"> Submit </button>
-                        </form>
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-blue shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 0.7rem;">Number of Residents</div>
+                            <div class="h4 mb-0 font-weight-bold text-dark"><?= $rescount ?></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-3"> 
-                <div class="card border-left-primary shadow">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Number of Residents</div>
-                                    <div class="h5 mb-0 font-weight-bold text-dark"><?= $rescount ?></div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-user-friends fa-2x text-dark"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <br> 
-
-                <div class="card border-left-primary shadow">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Household Head</div>
-                                    <div class="h5 mb-0 font-weight-bold text-dark"><?= $rescountfh ?></div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-user fa-2x text-dark"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <br>
-
-                <div class="card border-left-primary shadow">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Male Residents</div>
-                                    <div class="h5 mb-0 font-weight-bold text-dark"><?= $rescountm ?></div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-male fa-2x text-dark"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <br> 
-
-                <div class="card border-left-primary shadow">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Female Residents</div>
-                                    <div class="h5 mb-0 font-weight-bold text-dark"><?= $rescountf ?></div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-female fa-2x text-dark"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> 
         </div>
 
-        <br>
-        <br>
-        <br>
-
-        <div class="col-md-12">
-			<form method="POST" action="">
-				<div class="input-icons" >
-                    <i class="fa fa-search icon"></i>
-					<input type="search" class="form-control search" name="keyword" style="border-radius: 30px;" value="" required=""/>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-green shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1" style="font-size: 0.7rem;">Total Household Head</div>
+                            <div class="h4 mb-0 font-weight-bold text-dark"><?= $rescountfh ?></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-user-tie fa-2x text-gray-300"></i></div>
+                    </div>
                 </div>
-                    <button class="btn btn-success" name="search_resident" style="width: 90px; font-size: 17px; border-radius:30px; margin-left:41.5%;">Search</button>
-					<a href="admn_resident_crud.php" class="btn btn-info" style="width: 90px; font-size: 17px; border-radius:30px;">Reload</a>
-				
-			</form>
-			<br />
-            <br>
-		<?php 
-            include('search_resident.php');
-        ?>
-	</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-cyan shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1" style="font-size: 0.7rem;">Total Male Residents</div>
+                            <div class="h4 mb-0 font-weight-bold text-dark"><?= $rescountm ?></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-male fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-orange shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="font-size: 0.7rem;">Total Female Residents</div>
+                            <div class="h4 mb-0 font-weight-bold text-dark"><?= $rescountf ?></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-female fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="search-container mb-4">
+                <form method="POST" action="">
+                    <div class="position-relative mb-3">
+                        <i class="fa fa-search search-icon-inside"></i>
+                        <input type="search" class="form-control pill-search form-control-lg" name="keyword" placeholder="Search resident..." required>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success btn-pill mr-2" name="search_resident" style="width: 120px;">Search</button>
+                        <a href="admn_resident_crud.php" class="btn btn-info btn-pill text-white" style="width: 120px;">Reload</a>
+                    </div>
+                </form>
+            </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="bg-white p-4 shadow-sm" style="border-radius: 15px;">
+                <?php include('search_resident.php'); ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addResidentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl shadow-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="exampleModalLabel text-center">Add New Barangay Resident</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" class="was-validated">
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label>Last Name:</label>
+                            <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>First Name:</label>
+                            <input type="text" class="form-control" name="fname" placeholder="Enter First Name" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Middle Initial:</label>
+                            <input type="text" class="form-control" name="mi" placeholder="Enter Middle Initial" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label>Contact Number:</label>
+                            <input type="tel" class="form-control" name="contact" maxlength="11" pattern="[0-9]{11}" placeholder="09xxxxxxxxx" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Email:</label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Password:</label>
+                            <input type="password" class="form-control" name="password" placeholder="Enter Password" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 form-group"><label>House No:</label><input type="text" class="form-control" name="houseno" required></div>
+                        <div class="col-md-3 form-group"><label>Street:</label><input type="text" class="form-control" name="street" required></div>
+                        <div class="col-md-3 form-group"><label>Barangay:</label><input type="text" class="form-control" name="brgy" required></div>
+                        <div class="col-md-3 form-group"><label>Municipality:</label><input type="text" class="form-control" name="municipal" required></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 form-group"><label>Birth Date:</label><input type="date" class="form-control" name="bdate" required></div>
+                        <div class="col-md-4 form-group"><label>Birth Place:</label><input type="text" class="form-control" name="bplace" required></div>
+                        <div class="col-md-4 form-group"><label>Nationality:</label><input type="text" class="form-control" name="nationality" required></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label>Status:</label>
+                            <select class="form-control" name="status" required>
+                                <option value="">Choose Status...</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Divorced">Divorced</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Age:</label>
+                            <input type="number" class="form-control" name="age" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Sex:</label>
+                            <select class="form-control" name="sex" required>
+                                <option value="">Choose Sex...</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Registered Voter?</label>
+                            <select class="form-control" name="voter" required>
+                                <option value="">...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Head of Family?</label>
+                            <select class="form-control" name="family_role" required>
+                                <option value="">...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" name="role" value="resident">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:30px;">Close</button>
+                    <button type="submit" name="add_resident" class="btn btn-primary" style="width: 150px; border-radius:30px;">Submit Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
     
@@ -368,6 +290,7 @@
 <!-- fontawesome icons -->
 <script src="https://kit.fontawesome.com/67a9b7069e.js" crossorigin="anonymous"></script>
 <script src="../BarangaySystem/bootstrap/js/bootstrap.bundle.js" type="text/javascript"> </script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <?php 
     include('dashboard_sidebar_end.php');

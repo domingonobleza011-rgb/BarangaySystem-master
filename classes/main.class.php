@@ -364,8 +364,94 @@ public function view_active_announcements($user_id){
     $stmt = $connection->prepare("INSERT INTO tbl_hidden_announcements (user_id, announcement_id) VALUES (?, ?)");
     $stmt->execute([$user_id, $announcement_id]);
 }
+public function sendMessage($id_resident, $message_text) {
+    try {
+        $sql = "INSERT INTO resident_messages (id_resident, message_text, date_sent) 
+                VALUES (:id, :msg, NOW())";
+        
+        // We use openConn() because that is what you defined at the top of the class
+        $stmt = $this->openConn()->prepare($sql); 
+        
+        $stmt->bindParam(':id', $id_resident);
+        $stmt->bindParam(':msg', $message_text);
+        
+        return $stmt->execute(); 
+    } catch (PDOException $e) {
+        // This helps you debug if the 'resident_messages' table is missing
+        error_log("Message Error: " . $e->getMessage());
+        return false;
+    } finally {
+        // Good practice: close the connection after the work is done
+        $this->closeConn();
+    }
+} 
 
-    
+public function getResidentMessages($id_resident) {
+    try {
+        $sql = "SELECT * FROM resident_messages WHERE id_resident = ? ORDER BY date_sent DESC";
+        $stmt = $this->openConn()->prepare($sql);
+        $stmt->execute([$id_resident]);
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        return [];
+    } finally {
+        $this->closeConn();
+    }
+}
+// Inside classes/main.class.php
+public function deleteResidentMessage($id_msg) {
+    try {
+        $connection = $this->openConn();
+        // Use the exact column name you found in phpMyAdmin here
+        $sql = "DELETE FROM resident_messages WHERE id_message = ?"; 
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->execute([$id_msg]);
+        
+        return $result;
+    } catch (PDOException $e) {
+        // This will print the EXACT database error to your screen
+        die("Database Error: " . $e->getMessage()); 
+    }
+}
+public function sendMessageToAdmin($id_resident, $message_text) {
+    try {
+        $connection = $this->openConn();
+        $sql = "INSERT INTO admin_messages (id_resident, message_text, date_sent, status) 
+                VALUES (?, ?, NOW(), 'unread')";
+        $stmt = $connection->prepare($sql);
+        return $stmt->execute([$id_resident, $message_text]);
+    } catch (PDOException $e) {
+        // THIS LINE WILL SHOW YOU THE EXACT PROBLEM
+        die("Database Error: " . $e->getMessage()); 
+    }
+}
+public function viewMessages() {
+    try {
+        $connection = $this->openConn();
+        // Updated to common column names for this system: res_fname and res_lname
+        $sql = "SELECT m.*, r.fname, r.lname 
+                FROM admin_messages m 
+                JOIN tbl_resident r ON m.id_resident = r.id_resident 
+                ORDER BY m.date_sent DESC";
+        
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        die("Database Error: " . $e->getMessage());
+    }
+}
+public function deleteMessage($id_admin_msg) {
+    try {
+        $connection = $this->openConn();
+        $sql = "DELETE FROM admin_messages WHERE id_admin_msg = ?";
+        $stmt = $connection->prepare($sql);
+        return $stmt->execute([$id_admin_msg]);
+    } catch (PDOException $e) {
+        die("Database Error: " . $e->getMessage());
+    }
+}
     //------------------------------------------ Certificate of Residency CRUD -----------------------------------------------
     public function get_single_certofres($id_resident){
 

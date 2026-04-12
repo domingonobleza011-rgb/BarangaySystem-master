@@ -362,137 +362,129 @@ $view = $bmis->view_active_announcements($userdetails['id_resident']);
             <br>
             <br>
 
-            <div class="container"> 
-                
-                <div class="row">
-                    <div class="col"> 
-                        <a href="services_business.php ?id_resident=<?= $userdetails['id_resident'];?>">
-                            <div class="zoom1"> 
-                                <div class="card"> 
-                                    <div class="card-body text-center">
-                                        <i class="bi bi-file-earmark-medical-fill"></i> 
-                                        <h4> Business Permit </h4> 
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col"> 
-                        <a href="services_brgyid.php ?id_resident=<?= $userdetails['id_resident'];?>">
-                            <div class="zoom1">
-                                <div class="card"> 
-                                    <div class="card-body text-center"> 
-                                        <i class="bi bi-person-vcard-fill"></i>
-                                        <h4> Barangay ID </h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col"> 
-                        <a href="services_certofindigency.php ?id_resident=<?= $userdetails['id_resident'];?>">
-                            <div class="zoom1">
-                                <div class="card"> 
-                                    <div class="card-body text-center"> 
-                                        <i class="bi bi-briefcase-fill"></i>
-                                        <h4> Certificate of Indigency </h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
+<div class="container my-5">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        
+        <div class="col">
+            <a href="services_business.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-earmark-medical-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Business Permit</h4>
+                        </div>
                     </div>
                 </div>
+            </a>
+        </div>
 
-                <br>
-                <div class="row card-spacing"> 
-                    <div class="col">
-                        <a href="services_certofres.php ?id_resident=<?= $userdetails['id_resident'];?>"> 
-                        <div class="zoom1">    
-                            <div class="card"> 
-                                <div class="card-body text-center"> 
-                                <i class="bi bi-house-check-fill"></i>
-                                    <h4> Certificate of Residency </h4>
-                                </div>
-                            </div>
+        <div class="col">
+            <a href="services_brgyid.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-person-vcard-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Barangay ID</h4>
                         </div>
-                        </a>
-                    </div>
-
-                    <div class="col">
-                        <a href="services_brgyclearance.php ?id_resident=<?= $userdetails['id_resident'];?>"> 
-                        <div class="zoom1">    
-                            <div class="card"> 
-                                <div class="card-body text-center">
-                                <i class="bi bi-shield-lock-fill"></i> 
-                                    <h4> Barangay Clearance </h4>
-                                </div>
-                            </div>
-                        </div>
-                        </a>
-                    </div>
-
-                    <div class="col">
-                        <a href="resident_youth_profile.php ?id_resident=<?= $userdetails['id_resident'];?>"> 
-                        <div class="zoom1">    
-                            <div class="card"> 
-                                <div class="card-body text-center">
-                                <i class="bi bi-people-fill"></i> 
-                                    <h4> Youth Profiling </h4>
-                                </div>
-                            </div>
-                        </div>
-                        </a>
-                    </div>
-
-                    <div class="col">
-                        <a href="services_blotter.php ?id_resident=<?= $userdetails['id_resident'];?>"> 
-                        <div class="zoom1">    
-                            <div class="card"> 
-                                <div class="card-body text-center">
-                                    <i class="bi bi-people-fill"></i> 
-                                    <h4> Blotter</h4> 
-                                </div>
-                            </div>
-                        </div>
-                        </a>
                     </div>
                 </div>
-            </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="services_certofindigency.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-briefcase-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Certificate of Indigency</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="services_certofres.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-house-check-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Certificate of Residency</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="services_brgyclearance.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-lock-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Barangay Clearance</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="resident_youth_profile.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Youth Profiling</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="services_blotter.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-exclamation-octagon-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Blotter</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="resident_messages.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-chat-dots-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">Messages</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <div class="col">
+            <a href="about_us.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+                <div class="zoom1 h-100">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-info-circle-fill fs-1"></i>
+                            <h4 class="mt-2 text-dark">About Sytem</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+    </div>
+</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
         </section>
 
         <br>
