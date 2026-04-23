@@ -11,3 +11,4 @@ Admin and Staff dashboard overview with automated weekly and monthly reports and
 Document requests such as "Tent, Table, Chair Rental" "Barangay ID" "Barangay Clearance" "Certificate of Indigency" "Business Permit" "Peace and Order Report"
 
 
+"# official-code" 
