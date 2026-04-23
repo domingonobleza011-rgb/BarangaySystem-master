@@ -1,17 +1,14 @@
 <?php
-   // Force errors to show so we can see the real problem
    error_reporting(E_ALL);
    ini_set('display_errors', 1);
-   
    require('classes/resident.class.php');
    
    $userdetails = $bmis->get_userdata();
    $bmis->validate_admin();
-   
    $current_admin_id = $userdetails['id_resident']; 
 
    $bmis->create_announcement();
-   $bmis->admin_delete_announcement(); // Check if this name matches the class
+   $bmis->admin_delete_announcement(); 
    
    $view = $bmis->view_announcement(); 
    $announcementcount = $bmis->count_announcement();
@@ -20,137 +17,143 @@
    $cdate = $dt->format('Y/m/d');   
 ?>
 
-<?php 
-    include('dashboard_sidebar_start.php');
-?>
+<?php include('dashboard_sidebar_start.php'); ?>
 
-<!-- Begin Page Content -->
+<style>
+    .main-container { padding: 30px; background-color: #f8f9fa; min-height: 100vh; }
+    .card { border: none; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: transform 0.3s; }
+    .card-header { border-top-left-radius: 15px !important; border-top-right-radius: 15px !important; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .btn-primary { background: linear-gradient(45deg, #007bff, #0056b3); border: none; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,123,255,0.4); }
+    .table thead { background-color: #f1f3f5; }
+    .announcement-preview { border-left: 8px solid #28a745 !important; background: #fff; }
+</style>
 
-<div class="container">
-
-    <!-- Page Heading -->
-
-    <div class="row"> 
+<div class="main-container">
+    <div class="row mb-5"> 
         <div class="col-md-12"> 
-            <h1 class="mb-4 text-center">Event Announcement Page</h1>
+            <h2 class="text-center fw-bold text-dark">Bulletin Management</h2>
+            <p class="text-center text-muted">Create and manage announcements for Barangay San Pedro</p>
         </div>
     </div>
-
-    <hr>
-
-    <br>
       
-    <div class="row"> 
-        <div class="col-sm-6"> 
-            <div class="card">
-                <div class="card-header bg-primary text-white" style="font-size: 20px;"> Event Announcement Form </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div class="row"> 
-                            <div class="col">
-                                <h6>
-                                    <i class="fas fa-bullhorn"></i>
-                                    Announcement Message
-                                </h6>
-                                <br>
-                                <textarea name="event" class="form-control" rows="6" placeholder="Enter Message Here"></textarea>
-                            </div>
+    <div class="row g-4"> 
+        <div class="col-lg-5"> 
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white p-3"> 
+                   <i class="fas fa-edit me-2"></i> Create New Entry 
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4"> 
+                            <label class="form-label fw-bold"><i class="fas fa-bullhorn text-primary me-2"></i>Announcement Message</label>
+                            <textarea name="event" class="form-control" rows="5" placeholder="What is happening in the Barangay?" style="border-radius: 10px; border: 1px solid #dee2e6;"></textarea>
                         </div>
 
-                        <br>
-                        <hr>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-image text-primary me-2"></i>Upload Poster</label>
+                            <input type="file" name="announcement_img" class="form-control" accept="image/*" style="border-radius: 10px;">
+                            <small class="text-muted">High-quality JPG or PNG recommended.</small>
+                        </div>
 
-                        <div class="row"> 
-                            <div class="col"> 
-                                <input type="hidden" name="start_date" value="<?= $cdate?>">
-                                <input name="addedby" type="hidden" value="<?= $userdetails['surname']?>, <?= $userdetails['firstname']?>">
-                                <button type="submit" name="create_announce" class="btn btn-primary" style="margin-left: 34%; border-radius: 15px; width: 150px; font-size: 18px;"> Submit Entry </button>
-                            </div>
-                        </div>       
+                        <input type="hidden" name="start_date" value="<?= $cdate?>">
+                        <input name="addedby" type="hidden" value="<?= $userdetails['surname']?>, <?= $userdetails['firstname']?>">
+                        
+                        <button type="submit" name="create_announce" class="btn btn-primary w-100 py-2 fw-bold" style="border-radius: 10px;"> 
+                            Publish Announcement 
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="col-sm-6"> 
-            <div class="card">
-                <div class="card-header bg-info text-white" style="font-size: 20px;"> Current Announcement Posted </div>
-                <div class="card-body">
-                    <table class="table table-hover table-bordered table-responsive text-center">
-                        <form action="" method="post">
-                            <thead class="alert-info"> 
+
+        <div class="col-lg-7"> 
+            <div class="card h-100">
+                <div class="card-header bg-dark text-white p-3"> 
+                   <i class="fas fa-list me-2"></i> History Logs 
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead> 
                                 <tr>
-                                    <th> Actions </th>
-                                    <th> Announcement </th>
-                                    <th> Date Posted </th>
-                                    <th> Added By </th>        
+                                    <th class="ps-4">Content</th>
+                                    <th>Date</th>
+                                    <th>Author</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody> 
-                                <?php if(is_array($view)) {?>
-                                    <?php foreach($view as $view) {?>
-                                        <tr>
-                                            <td>    
-    <form action="" method="post">
-        <input type="hidden" name="id_announcement" value="<?= $view['id_announcement'];?>">
-        <button class="btn btn-danger" type="submit" name="delete_announcement"> Remove </button>
-    </form>
-</td>
-                                            <td> <?= $view['event'];?> </td>
-                                            <td> <?= $view['start_date'];?> </td>
-                                            <td> <?= $view['addedby'];?> </td>              
-                                        </tr>
-                                    <?php }?>
-                                <?php } ?>
+                                <?php if(is_array($view)): ?>
+                                    <?php foreach($view as $row): ?> 
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="text-truncate" style="max-width: 200px;">
+                                                <?= htmlspecialchars($row['event']); ?>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border"><?= $row['start_date'];?></span></td>
+                                        <td><small class="text-muted"><?= $row['addedby'];?></small></td>
+                                        <td class="text-center">    
+                                            <form action="" method="post" onsubmit="return confirm('Delete this post permanently?');">
+                                                <input type="hidden" name="id_announcement" value="<?= $row['id_announcement'];?>">
+                                                <button class="btn btn-link text-danger p-0" type="submit" name="delete_announcement">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </tbody>
-                        </form>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <br><br>
-
-    <div class="row"> 
-        <div class="col">             
-            <div class="card">
-                <div class="card-header bg-success text-white" style="font-size: 20px;"> Current Announcement Output </div>
-                <div class="card-body">
-
-                    <div class="alert alert-info alert-dismissible fade show" 
-                        style="border-radius:30px;
-                        margin-left:13%; 
-                        width:75%;
-                        height:180px;
-                        color: white;
-                        background-color:#3498DB;" role="alert">
-                        <strong><h4>ANNOUNCEMENT!<h4><hr></strong> <br> <p> <?= $view['event'];?> </p>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- /.container-fluid -->
-
+    <div class="row mt-5"> 
+        <div class="col-12"> 
+            <div class="card announcement-preview shadow-lg">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <span class="badge bg-success-soft text-success px-3">Live Preview</span>
+                </div>
+                <div class="card-body p-4">
+                    <?php if(is_array($view) && !empty($view)): 
+                        $latest = $view[0]; 
+                    ?>
+                    <div class="row align-items-center">
+                        <?php if(!empty($latest['image'])): ?>
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <img src="uploads/<?= $latest['image']; ?>" class="img-fluid rounded shadow" style="max-height: 200px; width: 100%; object-fit: cover;">
+                        </div>
+                        <?php endif; ?>
+                        
+                        <div class="col">
+                            <h4 class="fw-bold text-dark mb-3">📢 <?= $latest['addedby']; ?> says:</h4>
+                            <p class="lead text-secondary" style="font-size: 1.1rem;"> 
+                                <?= nl2br(htmlspecialchars($latest['event'])); ?> 
+                            </p>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> Posted on <?= $latest['start_date']; ?></small>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                        <div class="text-center py-4 text-muted">No announcements to display yet.</div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<!-- End of Main Content -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-modal/2.2.6/js/bootstrap-modalmanager.min.js" integrity="sha512-/HL24m2nmyI2+ccX+dSHphAHqLw60Oj5sK8jf59VWtFWZi9vx7jzoxbZmcBeeTeCUc7z1mTs3LfyXGuBU32t+w==" crossorigin="anonymous"></script>
-<!-- responsive tags for screen compatibility -->
-<meta name="viewport" content="width=device-width, initial-scale=1 shrink-to-fit=no">
-<!-- custom css --> 
-<link href="../BarangaySystem/customcss/regiformstyle.css" rel="stylesheet" type="text/css">
-<!-- bootstrap css --> 
-<link href="../BarangaySystem/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"> 
-<!-- fontawesome icons -->
 <script src="https://kit.fontawesome.com/67a9b7069e.js" crossorigin="anonymous"></script>
-<script src="../BarangaySystem/bootstrap/js/bootstrap.bundle.js" type="text/javascript"> </script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="../BarangaySystem/bootstrap/js/bootstrap.bundle.js"></script>
+<link href="../BarangaySystem/bootstrap/css/bootstrap.css" rel="stylesheet"> 
 
-<?php 
-    include('dashboard_sidebar_end.php');
-?>
+<?php include('dashboard_sidebar_end.php'); ?>

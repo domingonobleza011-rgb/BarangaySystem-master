@@ -278,7 +278,7 @@
         <!-- Eto yung navbar -->
 
         <nav class="navbar navbar-dark bg-primary sticky-top">
-            <a class="navbar-brand" href="resident_homepage.php">Barangay San pedro  Management System</a>
+            <a class="navbar-brand" href="resident_homepage.php">WELCOME <?= $userdetails['surname'];?>, <?= $userdetails['firstname'];?> <?= $userdetails['mname'];?> to BARANGAY SAN PEDRO </a>
             
            
            <div class="dropdown ml-auto">
@@ -293,49 +293,52 @@
             </div>
         </nav>
 
-       <div class="container mt-4">
+      <div class="container mt-4">
     <?php 
-    // Fetching announcements from the database
-   // We use the ID from your $userdetails array
-$view = $bmis->view_active_announcements($userdetails['id_resident']);
+    $view = $bmis->view_active_announcements($userdetails['id_resident']);
+    
     if(is_array($view) && count($view) > 0): 
         foreach($view as $announcement): ?>
-            <div class="alert alert-light border-start border-primary border-4 shadow-sm mb-3 position-relative" role="alert" style="border-radius: 8px;">
-                <div class="d-flex align-items-start p-1">
-                    <div class="bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px; flex-shrink: 0;">
-                        <i class="bi bi-megaphone-fill"></i>
-                    </div>
-                    
-                    <div class="flex-grow-1">
+            <div class="alert alert-light border shadow-sm mb-3 position-relative p-3" role="alert" style="border-radius: 12px; border-left: 5px solid #0d6efd !important;">
+                
+                <div class="row align-items-center">
+                    <?php if(!empty($announcement['image'])): ?>
+                        <div class="col-3 col-md-2">
+                            <a href="uploads/<?= $announcement['image']; ?>" target="_blank">
+                                <img src="uploads/<?= $announcement['image']; ?>" 
+                                     class="rounded shadow-sm" 
+                                     style="width: 80px; height: 80px; object-fit: cover;" 
+                                     alt="Announcement Image">
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="<?= !empty($announcement['image']) ? 'col-9 col-md-10' : 'col-12' ?>">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-bold mb-0 text-primary text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">
-                                Official Announcement
-                            </h6>
-                            <?php if(!isset($announcement['status']) || $announcement['status'] == 'unread'): ?>
-                                <span class="badge rounded-pill bg-info text-dark" style="font-size: 0.65rem;">New</span>
-                            <?php endif; ?>
+                            <span class="text-primary fw-bold" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">
+                                <i class="bi bi-megaphone-fill me-1"></i> Announcement
+                            </span>
+                            <small class="text-muted" style="font-size: 1rem; rright"><?= $announcement['start_date']; ?></small>
                         </div>
                         
-                        <p class="text-dark mb-3" style="font-size: 0.95rem; line-height: 1.4;">
+                        <p class="mb-2 text-dark" style="font-size: 1rem; line-height: 1.3;">
                             <?= htmlspecialchars($announcement['event']); ?>
                         </p>
                         
-                        <div class="border-top pt-2">
-                            <form action="" method="POST">
-    <input type="hidden" name="id_announcement" value="<?= $announcement['id_announcement']; ?>">
-    <button type="submit" name="delete_announcement">Delete</button>
-</form>
-                        </div>
+                        <form action="" method="POST" class="m-0">
+                            <input type="hidden" name="id_announcement" value="<?= $announcement['id_announcement']; ?>">
+                            <button type="submit" name="delete_announcement" class="btn p-0 text-muted" style="font-size: 0.75rem; text-decoration: none;">
+                                <i class="bi bi-eye-slash"></i> Hide
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.7rem;"></button>
+
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="alert" aria-label="Close" style="transform: scale(0.7);"></button>
             </div>
         <?php endforeach; 
     else: ?>
-        <div class="text-center py-5 border rounded bg-light">
-            <i class="bi bi-inbox text-muted display-4"></i>
-            <p class="text-muted mt-2">No active announcements at this time.</p>
-        </div>
+        <p class="text-center text-muted small py-3">No new announcements.</p>
     <?php endif; ?>
 </div>
 
@@ -475,7 +478,7 @@ $view = $bmis->view_active_announcements($userdetails['id_resident']);
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <i class="bi bi-info-circle-fill fs-1"></i>
-                            <h4 class="mt-2 text-dark">About Sytem</h4>
+                            <h4 class="mt-2 text-dark">About System</h4>
                         </div>
                     </div>
                 </div>

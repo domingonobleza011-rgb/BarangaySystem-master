@@ -80,11 +80,11 @@
                 <div class="row" style="margin-top: 1.1em;">
                     <div class="col">
                         <label class="form-group">Email </label>
-                        <input type="email" class="form-control" name="email"  Value="<?= $view['email'];?>">
+                        <input type="text" class="form-control" name="login_identity"  Value="<?= $view['login_identity'];?>">
                     </div>
                     <div class="col">
                         <label class="form-group">Password </label>
-                        <input type="password" class="form-control" name="password"  Value="<?= $view['password'];?>">
+                        <input type="password" class="form-control" name="password">
                     </div>
                     <div class="col">
                         <label class="form-group">Contact Number</label>

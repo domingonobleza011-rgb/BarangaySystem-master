@@ -252,6 +252,20 @@
         border-bottom: none;
         padding: 25px;
     }
+
+    #support-window {
+    transition: all 0.3s ease-in-out;
+    bottom: 80px !important; /* Positions it above the toggle button */
+}
+
+/* Custom scrollbar for the chat area */
+#support-content::-webkit-scrollbar {
+    width: 5px;
+}
+#support-content::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
     </style>
 </head>
 <body>
@@ -274,6 +288,7 @@
             <div class="content-box">
                 <img src="icons/logo.png" alt="Logo">
                 <h1>Barangay San Pedro Management System</h1>
+
                 
                 <h6>Our Mission</h6>
                 <p>To provide proactive, tech-driven administrative services that empower the youth and ensure transparent governance.</p>
@@ -282,6 +297,46 @@
                 <p>A digitally integrated community where every resident has seamless access to services.</p>
             </div>
         </div>
+<button type="button" class="btn border-0 shadow-lg position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center" 
+        id="chat-toggle-btn" 
+        style="width: 65px; height: 65px; z-index: 1050; border-radius: 20px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); transition: transform 0.3s ease;">
+    <i class="bi bi-robot text-white fs-3"></i>
+</button>
+
+<div id="chat-window" class="card shadow-2xl border-0 position-fixed bottom-0 end-0 m-4 d-none" 
+     style="width: 380px; height: 550px; z-index: 1051; border-radius: 24px; overflow: hidden; backdrop-filter: blur(10px); background: rgba(9, 152, 218, 0.95);">
+    
+    <div class="card-header border-0 d-flex justify-content-between align-items-center px-4 py-3" 
+         style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-25 rounded-circle p-2 me-2">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 text-white fw-bold">Smart Assistant</h6>
+                <small class="text-white-50" style="font-size: 0.7rem;">● Online & Ready</small>
+            </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white opacity-75" id="close-chat" style="font-size: 0.8rem;"></button>
+    </div>
+
+    <div class="card-body overflow-auto p-4" id="chat-content" style="background-color: #fdfdff;">
+        <div class="d-flex mb-3">
+            <div class="bg-light p-3 rounded-4 shadow-sm text-dark small border" style="border-bottom-left-radius: 4px !important; max-width: 85%;">
+                ✨ Hello! I'm your AI assistant. How can I help you with your <strong>enrollment</strong> or <strong>barangay</strong> inquiries today?
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-white border-0 p-3">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+            <input type="text" id="user-input" class="form-control border-0 px-4 py-2" placeholder="Ask me anything..." style="background: #f8f8f8; outline: none;">
+            <button class="btn btn-white border-0 text-primary px-3" id="send-btn">
+                <i class="bi bi-send-fill fs-5"></i>
+            </button>
+        </div>
+    </div>
+</div>
 
         <div class="login-panel">
             <div class="form-container">
@@ -289,10 +344,10 @@
                 <p class="subtitle">Please enter your credentials to log in.</p>
 
                 <form method="post">
-                    <label class="form-label">Username</label>
+                    <label class="form-label">Email or Phone Number</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="email" class="form-control" placeholder="Enter username" name="email" required>
+                        <input type="text" class="form-control" placeholder="Enter Email or Phone Number" name="login_identity" required>
                     </div>
 
                     <label class="form-label">Password</label>
@@ -370,9 +425,88 @@
         </div>
     </div>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function togglePass() {
+// Function to append messages to the chat UI
+function appendMessage(sender, text, isUser) {
+    const chatContent = document.getElementById('chat-content');
+    const alignment = isUser ? 'text-end' : 'text-start';
+    const bgClass = isUser ? 'bg-primary text-white' : 'bg-light border text-dark';
+    
+    chatContent.innerHTML += `
+        <div class="${alignment} mb-2">
+            <span class="${bgClass} p-2 rounded-3 d-inline-block" style="max-width: 80%;">
+                ${text}
+            </span>
+        </div>`;
+    chatContent.scrollTop = chatContent.scrollHeight;
+}
+
+// The main Send function with Retry Logic
+document.getElementById('send-btn').addEventListener('click', async function() {
+    const inputField = document.getElementById('user-input');
+    const userMessage = inputField.value.trim();
+
+    if (userMessage === "") return;
+
+    // 1. Show User Message
+    appendMessage('You', userMessage, true);
+    inputField.value = ""; 
+
+    // 2. Show "Typing..." placeholder
+    const chatContent = document.getElementById('chat-content');
+    const typingId = "typing-" + Date.now();
+    chatContent.innerHTML += `<div class="text-start mb-2" id="${typingId}"><small class="text-muted">Assistant is thinking...</small></div>`;
+    chatContent.scrollTop = chatContent.scrollHeight;
+
+    // 3. Connect to chat_helper.php with a retry attempt
+    let attempts = 0;
+    let maxAttempts = 2;
+    let success = false;
+
+    while (attempts < maxAttempts && !success) {
+        try {
+            const response = await fetch('assistant_logic.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            const data = await response.json();
+
+            // Check if Google is just busy
+            if (data.reply.includes("high demand")) {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    document.getElementById(typingId).innerHTML = `<small class="text-muted">Server busy, retrying (${attempts})...</small>`;
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+                    continue;
+                }
+            }
+
+            // If we get here, we either have a real answer or we've run out of retries
+            document.getElementById(typingId).remove(); // Remove typing indicator
+            appendMessage('Bot', data.reply, false);
+            success = true;
+
+        } catch (error) {
+            console.error("Connection error:", error);
+            document.getElementById(typingId).innerHTML = `<small class="text-danger">Connection lost. Check your internet.</small>`;
+            break;
+        }
+    }
+});
+
+// Window Toggle Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const chatToggle = document.getElementById('chat-toggle-btn');
+    const chatWindow = document.getElementById('chat-window');
+    const closeChat = document.getElementById('close-chat');
+
+    chatToggle.addEventListener('click', () => chatWindow.classList.toggle('d-none'));
+    closeChat.addEventListener('click', () => chatWindow.classList.add('d-none'));
+});        function togglePass() {
             const passField = document.getElementById("passInput");
             passField.type = passField.type === "password" ? "text" : "password";
         }

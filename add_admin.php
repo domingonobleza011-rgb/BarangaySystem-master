@@ -1,8 +1,15 @@
 <?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
     require('classes/main.class.php');
     $bmis->create_admin(); 
+    $userdetails = $bmis->get_userdata();
 ?>
 
+<?php 
+    include('dashboard_sidebar_start.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,9 +55,8 @@
     <div class="mb-3">
         <label>Role</label>
         <select name="role" class="form-control">
-            <option value="Admin">Admin</option>
-            <option value="Staff">Staff</option>
-        </select>
+    <option value="administrator">Admin</option> <option value="Staff">Staff</option>
+</select>
     </div>
 
     <button type="submit" name="add_admin" class="btn btn-primary">Create Admin</button>

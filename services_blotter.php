@@ -731,47 +731,6 @@
 
                                 <hr>
 
-                                <h6>Guidelines for Supporting Evidence Photo:</h6>
-
-                                <p>
-                                    <ul style="font-size: 15px;">
-                                        <li>
-                                            Good quality photo.
-                                        </li>
-                                        <li>
-                                            At least 50KB and no more than 50MB.
-                                        </li>
-                                        <li>
-                                            File Format: JPEG or PNG
-                                        </li>
-                                        <li>
-                                            Clear and in focus.
-                                        </li>
-                                    </ul>
-                                </p>
-
-                                <div class="row">
-                                    <div class="col">
-                                        <label>Supporting Evidence Photo:</label>
-                                        <div class="custom-file form-group">
-                                            <input type="file" onchange="readURL(this);" class="custom-file-input" id="customFile" name="blot_photo" required>
-                                            <label class="custom-file-label" for="customFile">Choose File Photo</label>
-                                            <div class="valid-feedback">Valid.</div>
-                                            <div class="invalid-feedback">Please fill out this field.</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <br>
-
-                                <div class="row">
-                                    <div class="col">
-                                        <label>Photo Display:</label>
-                                        <img id="blah" src="http://placehold.it/470x350" alt="your image" />
-                                    </div>
-                                </div>
-
-                                <hr>
 
                                 <h6>Guidelines for Narrative Report:</h6>
 

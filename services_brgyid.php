@@ -679,72 +679,7 @@
 
                                 <hr>
 
-                                <h6 style="font-size: 18px;">Guidelines for ID Picture:</h6>
-
-                                <br>
-
-                                    <h6>Appearances & Quality:</h6>
-                                    <p>
-                                        <ul style="font-size: 13.5px;">
-                                            <li>
-                                                Facing forwards and looking straight at the Camera.
-                                            </li>
-                                            <li>
-                                                Have your eyes open and visible.
-                                            </li>
-                                            <li>
-                                                Not have a head covering (unless it's for religious or medical reasons).
-                                            </li>
-                                            <li>
-                                                Contain no other objects or people.
-                                            </li>
-                                            <li>
-                                                White background only.
-                                            </li>
-                                            <li>
-                                                Wear Collar Shirt.
-                                            </li>
-                                            <li>
-                                                1x1 Photo Size.
-                                            </li>
-                                            <li>
-                                                At least 50KB and no more than 10MB.
-                                            </li>
-                                            <li>
-                                                File Format: JPEG or PNG
-                                            </li>
-                                            <li>
-                                                Clear and in focus.
-                                            </li>
-                                            <li>
-                                                Good Quality Photo
-                                            </li>
-                                        </ul>
-                                    </p>
-                                
-                                <div class="row">
-
-                                    <div class="col">
-                                        <label>Barangay ID Photo:</label>
-                                        <div class="custom-file mb-3 form-group">
-                                            <input type="file" onchange="readURL(this);" class="custom-file-input" id="customFile" name="res_photo" required>
-                                            <label class="custom-file-label" for="customFile">Choose File Photo</label>
-                                            <div class="valid-feedback">Valid.</div>
-                                            <div class="invalid-feedback">Please fill out this field.</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <label>Photo Display:</label>
-                                        <br>
-                                        <img class="idpicture" id="blah" src="http://placehold.it/200x200" alt="your image" />
-                                    </div>
-
-                                </div>
-
-                                <hr>
-
-                                <br>
+                               
 
                                 <h6>In case of emergency :</h6>
 

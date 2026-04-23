@@ -71,6 +71,25 @@
         border-radius: 50px;
         padding: 8px 25px;
     }
+    /* Prevent the row from wrapping and hide scrollbar if desired */
+.flex-nowrap {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Optional: Make the scrollbar look cleaner on mobile */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+/* Ensure cards don't shrink too much */
+.flex-nowrap .col-8 {
+    flex: 0 0 auto;
+}
 </style>
 
 <div class="container-fluid">
@@ -196,8 +215,8 @@
                             <input type="tel" class="form-control" name="contact" maxlength="11" pattern="[0-9]{11}" placeholder="09xxxxxxxxx" required>
                         </div>
                         <div class="col-md-4 form-group">
-                            <label>Email:</label>
-                            <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                            <label>Email or Phone Number:</label>
+                            <input type="text" class="form-control" name="login_identity" placeholder="Enter Email or Phone Number" required>
                         </div>
                         <div class="col-md-4 form-group">
                             <label>Password:</label>

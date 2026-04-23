@@ -10,9 +10,7 @@
 			<tr class="alert-info">
                 <th> Actions</th>
                 <th> Resident ID </th>
-                <th> Surname </th>
-                <th> First Name </th>
-                <th> Middle Name </th>
+                <th> Full Name </th>
                 <th> Business Name </th>
                 <th> House No. </th>
                 <th> Street </th>
@@ -43,10 +41,9 @@
                         </form>
                     </td>
                     <td> <?= $view['id_resident'];?> </td> 
-                    <td> <?= $view['lname'];?> </td>
-                    <td> <?= $view['fname'];?> </td>
-                    <td> <?= $view['mi'];?> </td>
-                    <td> <?= $view['bsname'];?> </td>
+                    <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
+                    <td> <?= $view['age'];?> </td>
+                    <td> <?= $view['nationality'];?> </td>
                     <td> <?= $view['houseno'];?> </td>
                     <td> <?= $view['street'];?> </td>
                     <td> <?= $view['brgy'];?> </td>
@@ -71,9 +68,7 @@
         <tr class="alert-info">
             <th> Actions</th>
             <th> Resident ID </th>
-            <th> Surname </th>
-            <th> First Name </th>
-            <th> Middle Name </th>
+            <th> Full Name </th>
             <th> Business Name </th>
             <th> House No. </th>
             <th> Street </th>
@@ -96,9 +91,7 @@
                         </form>
                     </td>
                     <td> <?= $view['id_resident'];?> </td> 
-                    <td> <?= $view['lname'];?> </td>
-                    <td> <?= $view['fname'];?> </td>
-                    <td> <?= $view['mi'];?> </td>
+                    <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
                     <td> <?= $view['bsname'];?> </td>
                     <td> <?= $view['houseno'];?> </td>
                     <td> <?= $view['street'];?> </td>

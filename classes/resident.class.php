@@ -8,14 +8,12 @@
 
  public function create_resident() {
     if(isset($_POST['add_resident'])) {
-        $email = $_POST['email'];
-        
-        // 1. CAPTURE PLAIN TEXT PASSWORD
+        // Capture the new generic identity field
+        $login_identity = $_POST['login_identity'];
         $plain_password = $_POST['password'];
-        
-        // 2. HASH IT IMMEDIATELY
         $hashed_password = password_hash($plain_password, PASSWORD_DEFAULT);
 
+        // Capture other fields
         $lname = $_POST['lname'];
         $fname = $_POST['fname'];
         $mi = $_POST['mi'];
@@ -26,7 +24,7 @@
         $street = $_POST['street'];
         $brgy = $_POST['brgy'];
         $municipal = $_POST['municipal'];
-        $contact = $_POST['contact'];
+        $contact = $_POST['contact']; // Profile contact info
         $bdate = $_POST['bdate'];
         $bplace = $_POST['bplace'];
         $nationality = $_POST['nationality'];
@@ -35,38 +33,46 @@
         $addedby = isset($_POST['addedby']) ? $_POST['addedby'] : 'Resident';
         $role = isset($_POST['role']) ? $_POST['role'] : 'resident';
 
-        $min_age = 18;
-        $max_age = 150;
+        // Initialize login columns
+        $email_to_save = NULL;
+        $phone_to_save = NULL;
 
-        if ($this->check_resident($email) == 0 ) {
-            if(!in_array( $age, range( $min_age, $max_age) ) ){
-                $message1 = "Sorry, you are still underaged to register an account";
-                echo "<script type='text/javascript'>alert('$message1');</script>";
+        // Logic: If it has an '@', treat as email; otherwise, treat as phone
+        if (filter_var($login_identity, FILTER_VALIDATE_EMAIL)) {
+            $email_to_save = $login_identity;
+        } else {
+            $phone_to_save = $login_identity;
+        }
+
+        // 1. Check if this identity is already taken
+        if ($this->check_resident($login_identity) == 0) {
+            
+            // Age validation
+            if ($age < 18) {
+                echo "<script>alert('Sorry, you are underaged to register an account');</script>";
                 return(0);
             }
-            else {
-                $connection = $this->openConn();
-                $stmt = $connection->prepare("INSERT INTO tbl_resident ( `email`,`password`,`lname`,`fname`,
-                `mi`, `age`, `sex`, `status`, `houseno`, `street`, `brgy`, `municipal`, `contact`, `bdate`, 
-                `bplace`, `nationality`,`voter` ,`family_role`,
-                `role`, `addedby`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?)");
 
-                // 3. USE $hashed_password IN THE EXECUTE ARRAY
-                $stmt->execute([ 
-                    $email, 
-                    $hashed_password, // Scrambled version sent to DB
-                    $lname, $fname, $mi, $age, $sex, $status, 
-                    $houseno, $street, $brgy, $municipal, $contact, $bdate, $bplace, $nationality, $voter, $familyrole, $role, $addedby
-                ]);
+            $connection = $this->openConn();
+            // 2. Updated INSERT to include both login columns
+            $stmt = $connection->prepare("INSERT INTO tbl_resident (
+                `email`, `phone_number`, `password`, `lname`, `fname`, `mi`, `age`, `sex`, 
+                `status`, `houseno`, `street`, `brgy`, `municipal`, `contact`, `bdate`, 
+                `bplace`, `nationality`, `voter`, `family_role`, `role`, `addedby`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-                $message2 = "Account added, you can now continue logging in";
-                echo "<script type='text/javascript'>alert('$message2');</script>";
+            $stmt->execute([ 
+                $email_to_save, 
+                $phone_to_save, 
+                $hashed_password, 
+                $lname, $fname, $mi, $age, $sex, $status, 
+                $houseno, $street, $brgy, $municipal, $contact, 
+                $bdate, $bplace, $nationality, $voter, $familyrole, $role, $addedby
+            ]);
 
-                header("Refresh:0");
-            }
-        }
-        else {
-            echo "<script type='text/javascript'>alert('Email Account already exists');</script>";
+            echo "<script>alert('Account added! You can now log in.'); window.location.href='index.php';</script>";
+        } else {
+            echo "<script>alert('This Email or Phone Number is already registered.');</script>";
         }
     }
 }
@@ -315,47 +321,62 @@ header("refresh: 0");
 
     //-------------------------------------- EXTRA FUNCTIONS ------------------------------------------------
 
-    public function resident_changepass() {
-        $id_resident = $_GET['id_resident'];
-        $oldpassword = ($_POST['oldpassword']);
-        $oldpasswordverify = ($_POST['oldpasswordverify']);
-        $newpassword = ($_POST['newpassword']);
-        $checkpassword = $_POST['checkpassword'];
+public function resident_changepass() {
+    // 1. Only run logic if the form was actually submitted
+    if(isset($_POST['resident_changepass'])) {
+        
+        // Use ?? to prevent "Undefined index" notices
+        // It's safer to get the ID from a session or a POST field rather than GET for a sensitive action
+        $id_resident = $_POST['id_resident'] ?? $_GET['id_resident'] ?? null;
+        $oldpassword_input = $_POST['oldpassword'] ?? '';
+        $newpassword = $_POST['newpassword'] ?? '';
+        $checkpassword = $_POST['checkpassword'] ?? '';
 
-        if(isset($_POST['resident_changepass'])) {
+        if (!$id_resident) {
+            echo "<script>alert('Error: Resident ID is missing.');</script>";
+            return;
+        }
 
-            $connection = $this->openConn();
-            $stmt = $connection->prepare("SELECT `password` FROM tbl_resident WHERE id_resident = ?");
-            $stmt->execute([$id_resident]);
-            $result = $stmt->fetch();
+        $connection = $this->openConn();
+        
+        // 2. Fetch the hashed password from the database
+        $stmt = $connection->prepare("SELECT `password` FROM tbl_resident WHERE id_resident = ?");
+        $stmt->execute([$id_resident]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if($result == 0) {
-                
-                echo "Old Password is Incorrect";
+        // 3. Validation Logic
+        if(!$result) {
+            echo "<script>alert('Resident not found.');</script>";
+        } 
+        // Use password_verify to check against the hashed DB password
+        elseif (!password_verify($oldpassword_input, $result['password'])) {
+            echo "<script>alert('Old Password is Incorrect');</script>";
+        } 
+        elseif ($newpassword !== $checkpassword) {
+            echo "<script>alert('New Password and Verification Password do not Match');</script>";
+        } 
+        elseif (empty($newpassword)) {
+            echo "<script>alert('New password cannot be empty');</script>";
+        } 
+        else {
+            // 4. Update the password using a NEW hash
+            $hashed_password = password_hash($newpassword, PASSWORD_DEFAULT);
+            
+            $stmt = $connection->prepare("UPDATE tbl_resident SET password = ? WHERE id_resident = ?");
+            $success = $stmt->execute([$hashed_password, $id_resident]);
+            
+            if ($success) {
+                echo "<script type='text/javascript'>
+                        alert('Password Updated Successfully');
+                        window.location.href = window.location.href; // Refresh page cleanly
+                      </script>";
+                exit();
+            } else {
+                echo "<script>alert('Database Error: Could not update password.');</script>";
             }
-
-            elseif ($oldpassword != $oldpasswordverify) {
-                echo "Old Password is Incorrect";
-            }
-
-            elseif ($newpassword != $checkpassword){
-                echo "New Password and Verification Password does not Match";
-            }
-
-            else {
-                $connection = $this->openConn();
-                $stmt = $connection->prepare("UPDATE tbl_resident SET password =? WHERE id_resident = ?");
-                $stmt->execute([$newpassword, $id_resident]);
-                
-                $message2 = "Password Updated";
-                echo "<script type='text/javascript'>alert('$message2');</script>";
-                header("refresh: 0");
-            }
-
-
         }
     }
-
+}
 
 
 

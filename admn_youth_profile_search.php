@@ -44,8 +44,7 @@
                     </form>
                 </td>
                 <td> <?= $view['id_youth'];?> </td> 
-                <td> <?= $view['lname'];?> </td>
-                <td> <?= $view['fname'];?> </td>
+                <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
                 <td> <?= $view['age'];?> </td>
                 <td> <?= $view['sex'];?> </td>
                 <td> <?= $view['civil_status'];?> </td>
@@ -73,9 +72,7 @@
             <tr>
                 <th style="width: 10%;">Actions</th>
                 <th style="width: 8%;">Youth ID</th>
-                <th style="width: 10%;">Surname</th>
-                <th style="width: 10%;">First Name</th>
-                <th style="width: 10%;">Middle Name</th>
+                <th style="width: 10%;">Fullname</th>
                 <th style="width: 5%;">Age</th>
                 <th style="width: 8%;">Sex</th>
                 <th style="width: 8%;">Status</th>
@@ -103,9 +100,7 @@
                     </form>
                 </td>
                 <td> <?= $view['id_youth'];?> </td> 
-                <td> <?= $view['lname'];?> </td>
-                <td> <?= $view['fname'];?> </td>
-                <td> <?= $view['mi'];?> </td>
+                <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
                 <td> <?= $view['age'];?> </td>
                 <td> <?= $view['sex'];?> </td>
                 <td> <?= $view['civil_status'];?> </td>

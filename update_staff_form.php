@@ -63,8 +63,8 @@
                         
                         <div class="row mt-3">
                             <div class="col">
-                                <label class="form-group">Email: </label>
-                                <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($staff['email']);?>">
+                                <label class="form-group">Login Identity: </label>
+                                <input type="text" class="form-control" name="login_identity">
                             </div>
                             <div class="col">
                                 <label class="form-group">Password:</label>

@@ -1,7 +1,7 @@
 <?php
 	// require the database connection
 	require 'classes/conn.php';
-	if(isset($_POST['search_bspermit'])){
+	if(isset($_POST['search_clearance'])){
 		$keyword = $_POST['keyword'];
 ?>
 
@@ -25,9 +25,9 @@
     <tbody>
         <?php
             
-            $stmnt = $conn->prepare("SELECT * FROM `tbl_bspermit` WHERE `lname` LIKE '%$keyword%' or  `mi` LIKE '%$keyword%' or  `fname` LIKE '%$keyword%' 
-            or `bsname` LIKE '%$keyword%' or  `id_resident` LIKE '%$keyword%' or  `houseno` LIKE '%$keyword%' or  `street` LIKE '%$keyword%'
-            or `brgy` LIKE '%$keyword%' or `municipal` LIKE '%$keyword%' or `bsindustry` LIKE '%$keyword%' or `aoe` LIKE '%$keyword%' ");
+            $stmnt = $conn->prepare("SELECT * FROM `tbl_clearance` WHERE `lname` LIKE '%$keyword%' or  `mi` LIKE '%$keyword%' or  `fname` LIKE '%$keyword%' 
+            or `age` LIKE '%$keyword%' or  `id_resident` LIKE '%$keyword%' or  `houseno` LIKE '%$keyword%' or  `street` LIKE '%$keyword%'
+            or `brgy` LIKE '%$keyword%' or `municipal` LIKE '%$keyword%' or `industry` LIKE '%$keyword%' or `aoe` LIKE '%$keyword%' ");
             $stmnt->execute();
             
             while($view = $stmnt->fetch()){
@@ -79,7 +79,7 @@
                     <td>    
                         <form action="" method="post">
                             <a class="btn btn-success" target="blank" style="width: 90px; font-size: 17px; border-radius:30px; margin-bottom: 2px;" href="brgyclearance_form.php?id_resident=<?= $view['id_resident'];?>">Generate</a> 
-                            <input type="hidden" name="id_clearance" value="<?= $view['id_brgyid']; ?>">
+                            <input type="hidden" name="id_clearance" value="<?= $view['id_clearance']; ?>">
                             <button class="btn btn-danger"  style="width: 90px; font-size: 17px; border-radius:30px;" type="submit" name="delete_clearance"> Archive </button>
                         </form>
                     </td>

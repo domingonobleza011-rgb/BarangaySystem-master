@@ -10,8 +10,7 @@
             <tr>
                 <th style="width: 10%;">Actions</th>
                 <th style="width: 5%;">Youth ID</th>
-                <th style="width: 50%;">Surname</th>
-                <th style="width: 50%;">First Name</th>
+                <th style="width: 50%;">FullName</th>
                 <th style="width: 50%;">Age</th>
                 <th style="width: 50%;">Sex</th>
                 <th style="width: 50%;">status</th>
@@ -44,8 +43,7 @@
                     </form>
                 </td>
                 <td> <?= $view['id_youth'];?> </td> 
-                <td> <?= $view['lname'];?> </td>
-                <td> <?= $view['fname'];?> </td>
+                <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
                 <td> <?= $view['age'];?> </td>
                 <td> <?= $view['sex'];?> </td>
                 <td> <?= $view['civil_status'];?> </td>
@@ -72,17 +70,16 @@
         <thead class="alert-info">
             <tr>
                 <th style="width: 10%;">Actions</th>
-                <th style="width: 8%;">Youth ID</th>
-                <th style="width: 10%;">Surname</th>
-                <th style="width: 10%;">First Name</th>
-                <th style="width: 5%;">Age</th>
-                <th style="width: 8%;">Sex</th>
-                <th style="width: 8%;">Status</th>
-                <th style="width: 10%;">Contact</th>
-                <th style="width: 10%;">Email</th>
-                <th style="width: 10%;">Education</th>
-                <th style="width: 10%;">Employed</th>
-                <th style="width: 10%;">Skills</th>
+                <th style="width: 5%;">Youth ID</th>
+                <th style="width: 50%;">FullName</th>
+                <th style="width: 50%;">Age</th>
+                <th style="width: 50%;">Sex</th>
+                <th style="width: 50%;">status</th>
+                <th style="width: 50%;">Contact</th>
+                <th style="width: 50%;">Email</th>
+                <th style="width: 50%;">Education</th>
+                <th style="width: 50%;">Employed</th>
+                <th style="width: 100%;">Skills</th>
             </tr>
         </thead>
         <tbody>
@@ -102,8 +99,7 @@
                     </form>
                 </td>
                 <td> <?= $view['id_youth'];?> </td> 
-                <td> <?= $view['lname'];?> </td>
-                <td> <?= $view['fname'];?> </td>
+                <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
                 <td> <?= $view['age'];?> </td>
                 <td> <?= $view['sex'];?> </td>
                 <td> <?= $view['civil_status'];?> </td>

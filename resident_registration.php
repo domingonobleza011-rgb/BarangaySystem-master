@@ -69,16 +69,28 @@
                                     <input type="tel" class="form-control" name="contact" maxlength="11" pattern="[0-9]{11}" placeholder="09123456789" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Email:</label>
-                                    <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                                    <label class="form-label">Email or Phone Number:</label>
+                                    <input type="text" class="form-control" name="login_identity" placeholder="Enter Email or Phone Number" required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Password:</label>
-                                    <div class="password-wrapper">
-                                        <input type="password" class="form-control" id="password-field" name="password" placeholder="Enter Password" required style="padding-right: 40px;">
-                                        <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                    </div>
-                                </div>
+<div class="col-md-4">
+    <label class="form-label">Password:</label>
+    <div class="password-wrapper" style="position: relative;">
+        <input type="password" 
+               class="form-control" 
+               id="password-field" 
+               name="password" 
+               placeholder="Enter Password" 
+               required 
+               style="padding-right: 40px;">
+    </div>
+    
+    <div class="mt-2">
+        <div class="progress" style="height: 5px;">
+            <div id="strength-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+        </div>
+        <small id="strength-text" class="form-text text-muted">Password strength</small>
+    </div>
+</div>
                             </div>
 
                             <div class="row g-3 mtop">
@@ -92,7 +104,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Barangay:</label>
-                                    <input type="text" class="form-control" name="brgy" value="San Pedro" required>
+                                    <input type="text" class="form-control" name="brgy" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Municipality:</label>
@@ -227,6 +239,48 @@
                 input.attr("type", "password");
             }
         });
+
+        document.getElementById('password-field').addEventListener('input', function() {
+    const password = this.value;
+    const bar = document.getElementById('strength-bar');
+    const text = document.getElementById('strength-text');
+    
+    let strength = 0;
+
+    // Evaluation Criteria
+    if (password.length >= 8) strength++;
+    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+    if (password.match(/\d/)) strength++;
+    if (password.match(/[^a-zA-Z\d]/)) strength++;
+
+    // UI Updates
+    switch (strength) {
+        case 0:
+            bar.style.width = '0%';
+            text.innerHTML = 'Password strength';
+            break;
+        case 1:
+            bar.style.width = '25%';
+            bar.className = 'progress-bar bg-danger';
+            text.innerHTML = 'Strength: <span class="text-danger">Weak</span>';
+            break;
+        case 2:
+            bar.style.width = '50%';
+            bar.className = 'progress-bar bg-warning';
+            text.innerHTML = 'Strength: <span class="text-warning">Fair</span>';
+            break;
+        case 3:
+            bar.style.width = '75%';
+            bar.className = 'progress-bar bg-info';
+            text.innerHTML = 'Strength: <span class="text-info">Good</span>';
+            break;
+        case 4:
+            bar.style.width = '100%';
+            bar.className = 'progress-bar bg-success';
+            text.innerHTML = 'Strength: <span class="text-success">Strong</span>';
+            break;
+    }
+});
     </script>
 </body>
 </html>

@@ -95,8 +95,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Email:</label>
-                                <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                                <label>Login Identity (Email or Phone):</label>
+                                <input type="text" class="form-control" name="login_identity" placeholder="Enter Email or Phone Number" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -179,10 +179,8 @@
         <thead class="alert-info">
                         <tr>
                             <th> Actions </th>
-                            <th> Email </th>
-                            <th> Surname </th>
-                            <th> First name </th>
-                            <th> Middle Name </th>
+
+                            <th> Fullname </th>
                             <th> Age </th>
                             <th> Sex </th>
                             <th> Address </th>
@@ -204,10 +202,7 @@
                                             <button class="btn btn-danger" type="submit" name="delete_staff"style="width: 90px; font-size: 17px; border-radius:30px;"> Archive </button>
                                         </form>
                                     </td>
-                                    <td> <?= $view['email'];?> </td>
-                                    <td> <?= $view['lname'];?> </td>
-                                    <td> <?= $view['fname'];?> </td>
-                                    <td> <?= $view['mi'];?> </td>
+                                    <td> <?= $view['lname'];?>, <?= $view['fname'];?> <?= $view['mi'];?> </td>
                                     <td> <?= $view['age'];?> </td>
                                     <td> <?= $view['sex'];?> </td>
                                     <td> <?= $view['address'];?> </td>

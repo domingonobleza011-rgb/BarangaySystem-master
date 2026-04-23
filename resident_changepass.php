@@ -349,8 +349,9 @@
                                                 <label> Current Password: </label>
                                                 <div class="input-container">
                                                     <i class="fa fa-lock icon"></i>
-                                                    <input class="input-field" type="password" id="password-field" name="oldpassword password" placeholder="Enter Current Password" require>
-                                                    <input class="input-field" type="hidden" id="password-field" name="oldpasswordverify password" value="<?= $userdetails['password']?>">
+                                                    <input class="input-field" type="password" id="password-field" name="oldpassword" placeholder="Enter Current Password" required>
+
+<input type="hidden" name="oldpasswordverify" value="<?= $userdetails['password']?>">
                                                     <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                                 </div>
 
@@ -359,7 +360,7 @@
                                                 <label> New Password: </label>
                                                 <div class="input-container">
                                                     <i class="fa fa-key icon"></i>
-                                                    <input class="input-field" id="password1" type="password" name="password1 newpassword" placeholder="Enter New Password" require>
+                                                    <input class="input-field" id="password1" type="password" name="newpassword" placeholder="Enter New Password" required>
                                                 </div>
                                                 
                                                 <br>
@@ -367,8 +368,7 @@
                                                 <label> Verify Password: </label>
                                                 <div class="input-container">
                                                     <i class="fa fa-user-lock icon"></i>
-                                                    <input class="input-field" id="confirm_password" type="password" name="checkpassword confirm_password" placeholder="Enter Verify Password" required>
-                                                </div>
+                                                    <input class="input-field" id="confirm_password" type="password" name="checkpassword" placeholder="Enter Verify Password" required>
 
                                                 <span id="message"></span>
 

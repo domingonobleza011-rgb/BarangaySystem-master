@@ -37,59 +37,59 @@ class BMISClass {
 
     //------------------------------------------ AUTHENTICATION & SESSION HANDLING --------------------------------------------
         //authentication function para sa sa tatlong type ng accounts
-        public function login() {
+      public function login() {
     if(isset($_POST['login'])) {
-        $email = $_POST['email'];
-        $password_input = $_POST['password']; // The plain text from the form
+        // Change $email to a generic identity variable
+        $identity = $_POST['login_identity']; 
+        $password_input = $_POST['password']; 
         
         $connection = $this->openConn();
 
-        // 1. Check ADMIN Table
-        $stmt = $connection->prepare("SELECT * FROM tbl_admin WHERE email = ?");
-        $stmt->execute([$email]);
+        // 1. Check ADMIN Table (Usually admins only use email, but we'll update it for consistency)
+        $stmt = $connection->prepare("SELECT * FROM tbl_admin WHERE email = ? OR phone_number = ?");
+        $stmt->execute([$identity, $identity]);
         $user = $stmt->fetch();
 
-        // Check if user exists AND if the password matches the hash
         if($user && password_verify($password_input, $user['password'])) {
-            if($user['role'] == 'administrator') {
+            if($user['role'] == 'Admin' || $user['role'] == 'administrator') {
                 $this->set_userdata($user);
                 header('Location: admn_dashboard.php');
-                return (0);
+                exit(); 
             }
         }
 
-        // 2. Check USER Table
-        $stmt = $connection->prepare("SELECT * FROM tbl_user WHERE email = ?");
-        $stmt->execute([$email]);
+        // 2. Check USER Table (Staff)
+        $stmt = $connection->prepare("SELECT * FROM tbl_user WHERE email = ? OR phone_number = ?");
+        $stmt->execute([$identity, $identity]);
         $user = $stmt->fetch();
 
-        if($user['role'] == 'user') {
-    $this->set_userdata($user);
-    
-    // Use JavaScript redirect as a backup if header() fails
-    echo "<script>window.location.href='staff_dashboard.php';</script>";
-    exit(); 
-}
+        // Added password_verify here as it was missing in your original snippet for the user table
+        if($user && password_verify($password_input, $user['password'])) {
+            if($user['role'] == 'user') {
+                $this->set_userdata($user);
+                echo "<script>window.location.href='staff_dashboard.php';</script>";
+                exit(); 
+            }
+        }
 
         // 3. Check RESIDENT Table
-        $stmt = $connection->prepare("SELECT * FROM tbl_resident WHERE email = ?");
-        $stmt->execute([$email]);
+        $stmt = $connection->prepare("SELECT * FROM tbl_resident WHERE email = ? OR phone_number = ?");
+        $stmt->execute([$identity, $identity]);
         $user = $stmt->fetch();
 
         if($user && password_verify($password_input, $user['password'])) {
             if($user['role'] == 'resident') {
                 $this->set_userdata($user);
                 header('Location: resident_homepage.php');
-                return(0);
+                exit();
             }
         }
 
-        // If it reaches here, either email was wrong or password_verify failed
-        $message = "Invalid Email or Password";
+        // Error handling
+        $message = "Invalid Credentials. Please check your Email/Phone and Password.";
         echo "<script type='text/javascript'>alert('$message');</script>";
     }
 }
-
     //eto yung function na mag e end ng session tas i l logout ka 
     public function logout(){
         if(!isset($_SESSION)) {
@@ -161,33 +161,28 @@ class BMISClass {
 
  //----------------------------------------------------- ADMIN CRUD ---------------------------------------------------------
     public function create_admin() {
+    if(isset($_POST['add_admin'])) {
+        $email = $_POST['email'];
+        
+        // CHANGE THIS LINE from md5 to password_hash
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
+        
+        $lname = $_POST['lname'];
+        $fname = $_POST['fname'];
+        $mi = $_POST['mi'];
+        $role = $_POST['role'];
 
-        if(isset($_POST['add_admin'])) {
-        
-            $email = $_POST['email'];
-            $password = md5($_POST['password']);
-            $lname = $_POST['lname'];
-            $fname = $_POST['fname'];
-            $mi = $_POST['mi'];
-            $role = $_POST['role'];
-    
-                if ($this->check_admin($email) == 0 ) {
-        
-                    $connection = $this->openConn();
-                    $stmt = $connection->prepare("INSERT INTO tbl_admin (`email`,`password`,`lname`,`fname`,
-                    `mi`, `role` ) VALUES (?, ?, ?, ?, ?, ?)");
-                    
-                    $stmt->Execute([$email, $password, $lname, $fname, $mi, $role]);
-                    
-                    $message2 = "Administrator account added, you can now continue logging in";
-                    echo "<script type='text/javascript'>alert('$message2');</script>";
-                }
-            }
-    
-            else {
-                echo "<script type='text/javascript'>alert('Account already exists');</script>";
-            }
+        if ($this->check_admin($email) == 0 ) {
+            $connection = $this->openConn();
+            $stmt = $connection->prepare("INSERT INTO tbl_admin (`email`,`password`,`lname`,`fname`, `mi`, `role` ) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$email, $password, $lname, $fname, $mi, $role]);
+            
+            echo "<script>alert('Administrator account added');</script>";
+        } else {
+            echo "<script>alert('Account already exists');</script>";
+        }
     }
+}
 
     public function get_single_admin($id_admin){
 
@@ -207,13 +202,11 @@ class BMISClass {
         }
     }
 
-   public function admin_changepass() {
+  public function admin_changepass() {
     if(isset($_POST['admin_changepass'])) {
         
-        // 1. Capture the ID from the hidden field
+        // 1. Capture the ID and password inputs
         $id_admin = $_POST['id_admin'] ?? null;
-        
-        // 2. Capture the passwords from the form names
         $oldpassword = $_POST['oldpassword'] ?? '';
         $newpassword = $_POST['newpassword'] ?? '';
         $checkpassword = $_POST['checkpassword'] ?? '';
@@ -225,28 +218,38 @@ class BMISClass {
 
         $connection = $this->openConn();
         
-        // 3. Check if the admin exists
+        // 2. Fetch the current hashed password from the database
         $stmt = $connection->prepare("SELECT `password` FROM tbl_admin WHERE id_admin = ?");
         $stmt->execute([$id_admin]);
         $result = $stmt->fetch();
 
         if (!$result) {
-            echo "Admin user not found in database.";
-        } 
-        // 4. Compare Old Password (Plain text check)
-        elseif ($oldpassword !== $result['password']) { 
+            echo "<script>alert('Admin user not found.');</script>";
+            return;
+        }
+
+        // 3. Verify Old Password (checks input against the Bcrypt hash)
+        if (!password_verify($oldpassword, $result['password'])) { 
             echo "<script>alert('Old Password is Incorrect');</script>";
         } 
-        // 5. Compare New Passwords
+        // 4. Ensure New Password and Confirm Password match
         elseif ($newpassword !== $checkpassword) {
             echo "<script>alert('New Passwords do not match');</script>";
         } 
+        // 5. Ensure the new password isn't empty
+        elseif (empty($newpassword)) {
+            echo "<script>alert('New password cannot be empty');</script>";
+        }
         else {
-            // 6. Success: Update the password
+            // 6. Success: Hash the NEW password and update
+            $hashed_new = password_hash($newpassword, PASSWORD_DEFAULT);
             $stmt = $connection->prepare("UPDATE tbl_admin SET password = ? WHERE id_admin = ?");
-            $stmt->execute([$newpassword, $id_admin]);
+            $stmt->execute([$hashed_new, $id_admin]);
             
-            echo "<script type='text/javascript'>alert('Password Updated Successfully'); window.location.href='admin_dashboard.php';</script>";
+            echo "<script type='text/javascript'>
+                alert('Password Updated Successfully'); 
+                window.location.href='admn_dashboard.php';
+            </script>";
         }
     }
 }
@@ -255,33 +258,49 @@ class BMISClass {
  //  ----------------------------------------------- ANNOUNCEMENT CRUD ---------------------------------------------------------
 
 
-    public function create_announcement() {
-        if(isset($_POST['create_announce'])) {
-            $id_announcement = $_POST['id_announcement'];
-            $event = $_POST['event'];
-            $start_date = $_POST['start_date'];
-            $addedby = $_POST['addedby'];
+public function create_announcement() {
+    if(isset($_POST['create_announce'])) {
+        // We don't usually manually set id_announcement if it's Auto-Increment
+        $event = $_POST['event'];
+        $start_date = $_POST['start_date'];
+        $addedby = $_POST['addedby'];
+        $image_name = null; // Default if no image is uploaded
 
-            $connection = $this->openConn();
-            $stmt = $connection->prepare("INSERT INTO tbl_announcement (`id_announcement`, `event`, `start_date`, `addedby`, `status`) VALUES (?, ?, ?, ?, 'active')");
-$stmt->execute([$id_announcement, $event, $start_date, $addedby]);
+        // Check if an image was actually uploaded
+        if(isset($_FILES['announcement_img']) && $_FILES['announcement_img']['error'] == 0) {
+            $upload_dir = "uploads/";
+            
+            // Create directory if it doesn't exist
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
 
-            $message2 = "Announcement Added";
-            echo "<script type='text/javascript'>alert('$message2');</script>";
-            header('refresh:0');
+            // Generate a unique name to prevent overwriting files with the same name
+            $file_ext = pathinfo($_FILES['announcement_img']['name'], PATHINFO_EXTENSION);
+            $image_name = time() . '_' . uniqid() . '.' . $file_ext;
+            $target_file = $upload_dir . $image_name;
+
+            // Move the file from temporary storage to your uploads folder
+            move_uploaded_file($_FILES['announcement_img']['tmp_name'], $target_file);
         }
 
-        else {
-        }
-    }
-
-    public function view_announcement(){
         $connection = $this->openConn();
-        $stmt = $connection->prepare("SELECT * from tbl_announcement");
-        $stmt->execute();
-        $view = $stmt->fetchAll();
-        return $view;
+        // Added 'image' column to your INSERT statement
+        $stmt = $connection->prepare("INSERT INTO tbl_announcement (`event`, `start_date`, `addedby`, `image`, `status`) VALUES (?, ?, ?, ?, 'active')");
+        $stmt->execute([$event, $start_date, $addedby, $image_name]);
+
+        echo "<script type='text/javascript'>alert('Announcement Added');</script>";
+        header('refresh:0');
     }
+}
+   public function view_announcement(){
+    $connection = $this->openConn();
+    // Adding DESC (Descending) makes the newest items appear at the top
+    $stmt = $connection->prepare("SELECT * from tbl_announcement ORDER BY id_announcement DESC");
+    $stmt->execute();
+    $view = $stmt->fetchAll();
+    return $view;
+}
 
     public function update_announcement() {
         if (isset($_POST['update_announce'])) {
@@ -307,15 +326,26 @@ $stmt->execute([$id_announcement, $event, $start_date, $addedby]);
 public function admin_delete_announcement(){
     if(isset($_POST['delete_announcement'])) {
         $id_announcement = $_POST['id_announcement'];
-
-        // This is the correct way for your specific class:
         $connection = $this->openConn(); 
-        
+
+        // 1. Get the filename first
+        $stmt = $connection->prepare("SELECT image FROM tbl_announcement WHERE id_announcement = ?");
+        $stmt->execute([$id_announcement]);
+        $row = $stmt->fetch();
+
+        // 2. Delete the actual file from the folder if it exists
+        if($row && !empty($row['image'])) {
+            $file_path = "uploads/" . $row['image'];
+            if(file_exists($file_path)) {
+                unlink($file_path);
+            }
+        }
+
+        // 3. Delete from database
         $stmt = $connection->prepare("DELETE FROM tbl_announcement WHERE id_announcement = ?");
         $stmt->execute([$id_announcement]);
 
-        $current_page = basename($_SERVER['PHP_SELF']);
-        echo "<script>alert('Announcement permanently deleted'); window.location.href='$current_page';</script>";
+        echo "<script>alert('Announcement and image deleted'); window.location.href='".basename($_SERVER['PHP_SELF'])."';</script>";
         exit();
     }
 }
@@ -927,7 +957,7 @@ public function get_single_youth($id_resident){
             $municipal = $_POST['municipal'];
             $bplace = $_POST['bplace'];
             $bdate = $_POST['bdate'];
-            $res_photo = $_POST['res_photo'];
+           
 
             $inc_lname = $_POST['inc_lname']; 
             $inc_fname = $_POST['inc_fname'];
@@ -940,12 +970,12 @@ public function get_single_youth($id_resident){
 
             $connection = $this->openConn();
             $stmt = $connection->prepare("INSERT INTO tbl_brgyid (`id_brgyid`, `id_resident`, `lname`, `fname`, `mi`,
-            `houseno`, `street`,`brgy`, `municipal`, `bplace`, `bdate`, `res_photo`, `inc_lname`,
+            `houseno`, `street`,`brgy`, `municipal`, `bplace`, `bdate`, `inc_lname`,
             `inc_fname`, `inc_mi`, `inc_contact`, `inc_houseno`, `inc_street`, `inc_brgy`, `inc_municipal`)
-            VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             $stmt->execute([$id_brgyid, $id_resident, $lname, $fname, $mi, $houseno,  $street, $brgy, $municipal, 
-            $bplace, $bdate, $res_photo, $inc_lname, $inc_fname, $inc_mi, $inc_contact, $inc_houseno, 
+            $bplace, $bdate, $inc_lname, $inc_fname, $inc_mi, $inc_contact, $inc_houseno, 
             $inc_street, $inc_brgy, $inc_municipal ]);
 
             $message2 = "Application Applied, you will receive our text message for further details";
@@ -1000,9 +1030,8 @@ public function get_single_youth($id_resident){
 
 
 
-    public function create_blotter() {
+   public function create_blotter() {
     if(isset($_POST['create_blotter'])) {
-        // id_blotter removed - let the database handle auto-increment
         $id_resident = $_POST['id_resident'];
         $lname = $_POST['lname'];
         $fname = $_POST['fname'];
@@ -1011,104 +1040,77 @@ public function get_single_youth($id_resident){
         $street = $_POST['street'];
         $brgy = $_POST['brgy'];
         $municipal = $_POST['municipal'];
-        
-        // Fix: Save only the filename string
-        $blot_photo = $_FILES['blot_photo']['name'];
-// This ensures it looks in the correct folder regardless of where the script is called
-$upload_directory = $_SERVER['DOCUMENT_ROOT'] . "/BarangaySystem-master/uploads/"; 
-
-// Make sure the directory exists, if not, create it
-if (!is_dir($upload_directory)) {
-    mkdir($upload_directory, 0777, true);
-}
-
-$target = $upload_directory . basename($blot_photo);
-move_uploaded_file($_FILES['blot_photo']['tmp_name'], $target);
-
         $contact = $_POST['contact'];
         $narrative = $_POST['narrative'];
 
         $connection = $this->openConn();
-        // Removed id_blotter from both lists
+        // Removed blot_photo from columns and values
         $stmt = $connection->prepare("INSERT INTO tbl_blotter (`id_resident`, `lname`, `fname`, `mi`,
-            `houseno`, `street`,`brgy`, `municipal`, `blot_photo`, `contact`, `narrative`)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            `houseno`, `street`,`brgy`, `municipal`, `contact`, `narrative`)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        // Execute without id_blotter
-        $stmt->execute([$id_resident, $lname, $fname, $mi, $houseno, $street, $brgy, $municipal, 
-            $blot_photo, $contact, $narrative]);
+        $stmt->execute([$id_resident, $lname, $fname, $mi, $houseno, $street, $brgy, $municipal, $contact, $narrative]);
 
         echo "<script type='text/javascript'>alert('Application Applied');</script>";
         header("refresh: 0");
     }  
 }
-    public function get_single_blotter($id_resident){
 
-        $id_resident = $_GET['id_resident'];
-        
-        $connection = $this->openConn();
-        $stmt = $connection->prepare("SELECT * FROM tbl_blotter where id_resident = ?");
-        $stmt->execute([$id_resident]);
-        $resident = $stmt->fetch();
-        $total = $stmt->rowCount();
+public function get_single_blotter($id_resident){
+    $id_resident = $_GET['id_resident'];
+    $connection = $this->openConn();
+    $stmt = $connection->prepare("SELECT * FROM tbl_blotter where id_resident = ?");
+    $stmt->execute([$id_resident]);
+    $resident = $stmt->fetch();
+    $total = $stmt->rowCount();
 
-        if($total > 0 )  {
-            return $resident;
-        }
-        else{
-            return false;
-        }
-    }
-   
+    return ($total > 0) ? $resident : false;
+}
 
-    public function view_blotter(){
-        $connection = $this->openConn();
-        $stmt = $connection->prepare("SELECT * from tbl_blotter");
-        $stmt->execute();
-        $view = $stmt->fetchAll();
-        return $view;
-    }
+public function view_blotter(){
+    $connection = $this->openConn();
+    $stmt = $connection->prepare("SELECT * from tbl_blotter");
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
 
-
-    public function delete_blotter(){
+public function delete_blotter(){
+    if(isset($_POST['delete_blotter'])) {
         $id_blotter = $_POST['id_blotter'];
+        $connection = $this->openConn();
+        $stmt = $connection->prepare("DELETE FROM tbl_blotter where id_blotter = ?");
+        $stmt->execute([$id_blotter]);
 
-        if(isset($_POST['delete_blotter'])) {
-            $connection = $this->openConn();
-            $stmt = $connection->prepare("DELETE FROM tbl_blotter where id_blotter = ?");
-            $stmt->execute([$id_blotter]);
-
-            header("Refresh:0");
-        }
+        header("Refresh:0");
     }
+}
 
-    public function update_blotter() {
-        if (isset($_POST['update_bspermit'])) {
-            $id_bspermit = $_GET['id_bspermit'];
-            $lname = $_POST['lname'];
-            $fname = $_POST['fname'];
-            $mi = $_POST['mi'];
-            $houseno = $_POST['houseno'];
-            $street = $_POST['street'];
-            $brgy = $_POST['brgy'];
-            $municipal = $_POST['municipal'];
-            $blot_photo = $_POST['blot_photo'];
-            $contact = $_POST['contact'];
-            $narrative = $_POST['narrative'];
+public function update_blotter() {
+    // Note: Changed condition to 'update_blotter' for consistency
+    if (isset($_POST['update_blotter'])) {
+        $id_blotter = $_GET['id_blotter']; 
+        $lname = $_POST['lname'];
+        $fname = $_POST['fname'];
+        $mi = $_POST['mi'];
+        $houseno = $_POST['houseno'];
+        $street = $_POST['street'];
+        $brgy = $_POST['brgy'];
+        $municipal = $_POST['municipal'];
+        $contact = $_POST['contact'];
+        $narrative = $_POST['narrative'];
 
-
-            $connection = $this->openConn();
-            $stmt = $connection->prepare("UPDATE tbl_blotter SET lname = ?, fname = ?,
-            mi = ?, bsname = ?, houseno = ?, street = ?, brgy = ?, municipal = ?,
-            bsindustry = ?, aoe = ? WHERE id_blotter = ?");
-            $stmt->execute([$id_bspermit, $lname, $fname, $mi, $houseno,  
-            $street, $brgy, $municipal, $blot_photo, $contact, $narrative]);
-            
-            $message2 = "Complain/Blotter Data Updated";
-            echo "<script type='text/javascript'>alert('$message2');</script>";
-            header("refresh: 0");
-        }
+        $connection = $this->openConn();
+        // Fixed the UPDATE query to use correct blotter fields
+        $stmt = $connection->prepare("UPDATE tbl_blotter SET lname = ?, fname = ?,
+            mi = ?, houseno = ?, street = ?, brgy = ?, municipal = ?,
+            contact = ?, narrative = ? WHERE id_blotter = ?");
+        
+        $stmt->execute([$lname, $fname, $mi, $houseno, $street, $brgy, $municipal, $contact, $narrative, $id_blotter]);
+        
+        echo "<script type='text/javascript'>alert('Complain/Blotter Data Updated');</script>";
+        header("refresh: 0");
     }
+}
 
     
 
