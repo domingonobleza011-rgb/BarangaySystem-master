@@ -3,7 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 // Pro-tip: Create a new key soon since this one was shared!
-$apiKey = "AIzaSyB5ops4TNqxb2LlVbkafcQjNnEDD7q7jyo";
+$apiKey = "AIzaSyCCbxJcpm2qoPO48qUAeY0H-0wjAheyrQ8";
 
 $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=" . $apiKey;
 
@@ -17,50 +17,13 @@ if (empty($userMessage)) {
 }
 
 // 1. Setup System Instructions
-$systemContext = "You are a helpful assistant for the San Pedro Barangay Records System. 
-Help users with questions about residency, clearances, and youth programs. 
-Keep answers concise and professional.
-
-PROCESS FOR REGISTERING:
-Step 1: Go to the 'Resident Registration' page from the sidebar.
-Step 2: Fill out the form with your Full Name, Birthdate, and Purok.
-Step 3: Upload a valid ID for verification.
-Step 4: Wait 24-48 hours for the Barangay Secretary to approve your account.
-
-business permit
-Step 1: Prepare
-First step is to prepare all of the information that will be needed in acquiring a certificate of residency.
-Step 2: Fill-Up
-Second step is to Fill-Up the entire form in our system.
-Step 3: Assessment
-Third step is to verify all of the information you've been given in our system that we can use to make the information of your document accurately.
-Step 4: Release
-Fourth step is for releasing of your Business Permit. 
-
-barangay Id
-
-Step 1: Fill-Up
-First step is to Fill-Up the entire form in our system.
-Step 2: Assessment
-Second step is to verify all of the information you've been given in our system that we can use to make the information of your document accurately.
-Step 3: Release
-Third step is for releasing of your document.
-
-indigency certificate
-
-Step 1: Fill-Up
-First step is to Fill-Up the entire form in our system.
-Step 2: Assessment
-Second step is to verify all of the information you've been given in our system that we can use to make the information of your document accurately.
-Step 3: Approval
-Third step is to approve your document. Therefore, we dont have an issue when we release your document.
-Step 4: Release
-Fourth step is for releasing of your document.
-
-blotter
-Step 1: Fill-Up the entire form in our system.
-Step 2: Verify all of the information you've been given in our system that we can use to solve your case as quick as possible.
-Step 3: Approve your complain, so we can set a schedule or an appointment to make an agreement on bot sides.";
+$systemContext = "You are the official  Assistant for Barangay San Pedro. 
+Your goal is to guide residents through these specific services:
+- Barangay ID: Needs Full name, Birthdate, Proof of Residency.
+- Cert. of Indigency: Needs Purpose and Resident Profile.
+- Blotter/Complaints: Needs incident details and parties involved.
+- Youth Profiling: For residents aged 15-30[cite: 122, 128].
+If a resident is not yet registered, advise them to complete their Resident Profile first[cite: 181].";
 
 // 2. Prepare the Request Body
 $data = [
