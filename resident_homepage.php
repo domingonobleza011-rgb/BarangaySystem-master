@@ -3,6 +3,9 @@
     include('classes/resident.class.php');
     $userdetails = $bmis->get_userdata();
 
+    // Check if resident is verified
+    $is_verified = $bmis->isResidentVerified($userdetails['id_resident']);
+
     $dt = new DateTime("now", new DateTimeZone('Asia/Manila'));
     $tm = new DateTime("now", new DateTimeZone('Asia/Manila'));
     $cdate = $dt->format('Y/m/d');
@@ -366,14 +369,43 @@
             <br>
 
 <div class="container my-5">
+
+<?php if (!$is_verified): ?>
+<!-- VERIFICATION NOTICE BANNER -->
+<div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 p-4" role="alert" style="border-left: 6px solid #ffc107 !important;">
+    <div class="d-flex align-items-start gap-3">
+        <div style="font-size: 2rem;">&#x1F512;</div>
+        <div>
+            <h5 class="fw-bold mb-1">Account Not Yet Verified</h5>
+            <p class="mb-2">To request barangay certificates and access other services, you must first verify your identity.</p>
+            <p class="mb-3"><strong>How to get verified:</strong> Go to <strong>Messages</strong>, then upload a clear photo of your valid government-issued ID (e.g., PhilSys ID, Driver's License, Passport, Voter's ID). The admin will review and approve your account.</p>
+            <a href="resident_messages.php?id_resident=<?= $userdetails['id_resident'];?>&upload_id=1" class="btn btn-warning fw-bold rounded-pill px-4">
+                <i class="bi bi-upload me-2"></i> Upload Valid ID Now
+            </a>
+        </div>
+    </div>
+</div>
+<?php else: ?>
+<div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 py-2 px-4" role="alert">
+    <i class="bi bi-patch-check-fill me-2"></i> <strong>Account Verified</strong> &mdash; You have full access to all barangay services.
+</div>
+<?php endif; ?>
+
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        
+
+        <!-- CERTIFICATE SERVICES (locked if not verified) -->
+
         <div class="col">
+            <?php if ($is_verified): ?>
             <a href="services_business.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+            <?php else: ?>
+            <a href="#" class="text-decoration-none" onclick="showVerifyAlert(); return false;">
+            <?php endif; ?>
                 <div class="zoom1 h-100">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm <?= !$is_verified ? 'border-secondary opacity-75' : '' ?>">
                         <div class="card-body text-center">
-                            <i class="bi bi-file-earmark-medical-fill fs-1"></i>
+                            <?php if (!$is_verified): ?><span class="badge bg-secondary float-end">&#x1F512;</span><?php endif; ?>
+                            <i class="bi bi-file-earmark-medical-fill fs-1 <?= !$is_verified ? 'text-secondary' : '' ?>"></i>
                             <h4 class="mt-2 text-dark">Business Permit</h4>
                         </div>
                     </div>
@@ -382,11 +414,16 @@
         </div>
 
         <div class="col">
+            <?php if ($is_verified): ?>
             <a href="services_brgyid.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+            <?php else: ?>
+            <a href="#" class="text-decoration-none" onclick="showVerifyAlert(); return false;">
+            <?php endif; ?>
                 <div class="zoom1 h-100">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm <?= !$is_verified ? 'border-secondary opacity-75' : '' ?>">
                         <div class="card-body text-center">
-                            <i class="bi bi-person-vcard-fill fs-1"></i>
+                            <?php if (!$is_verified): ?><span class="badge bg-secondary float-end">&#x1F512;</span><?php endif; ?>
+                            <i class="bi bi-person-vcard-fill fs-1 <?= !$is_verified ? 'text-secondary' : '' ?>"></i>
                             <h4 class="mt-2 text-dark">Barangay ID</h4>
                         </div>
                     </div>
@@ -395,11 +432,16 @@
         </div>
 
         <div class="col">
+            <?php if ($is_verified): ?>
             <a href="services_certofindigency.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+            <?php else: ?>
+            <a href="#" class="text-decoration-none" onclick="showVerifyAlert(); return false;">
+            <?php endif; ?>
                 <div class="zoom1 h-100">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm <?= !$is_verified ? 'border-secondary opacity-75' : '' ?>">
                         <div class="card-body text-center">
-                            <i class="bi bi-briefcase-fill fs-1"></i>
+                            <?php if (!$is_verified): ?><span class="badge bg-secondary float-end">&#x1F512;</span><?php endif; ?>
+                            <i class="bi bi-briefcase-fill fs-1 <?= !$is_verified ? 'text-secondary' : '' ?>"></i>
                             <h4 class="mt-2 text-dark">Certificate of Indigency</h4>
                         </div>
                     </div>
@@ -408,11 +450,16 @@
         </div>
 
         <div class="col">
+            <?php if ($is_verified): ?>
             <a href="services_certofres.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+            <?php else: ?>
+            <a href="#" class="text-decoration-none" onclick="showVerifyAlert(); return false;">
+            <?php endif; ?>
                 <div class="zoom1 h-100">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm <?= !$is_verified ? 'border-secondary opacity-75' : '' ?>">
                         <div class="card-body text-center">
-                            <i class="bi bi-house-check-fill fs-1"></i>
+                            <?php if (!$is_verified): ?><span class="badge bg-secondary float-end">&#x1F512;</span><?php endif; ?>
+                            <i class="bi bi-house-check-fill fs-1 <?= !$is_verified ? 'text-secondary' : '' ?>"></i>
                             <h4 class="mt-2 text-dark">Certificate of Residency</h4>
                         </div>
                     </div>
@@ -421,17 +468,24 @@
         </div>
 
         <div class="col">
+            <?php if ($is_verified): ?>
             <a href="services_brgyclearance.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
+            <?php else: ?>
+            <a href="#" class="text-decoration-none" onclick="showVerifyAlert(); return false;">
+            <?php endif; ?>
                 <div class="zoom1 h-100">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm <?= !$is_verified ? 'border-secondary opacity-75' : '' ?>">
                         <div class="card-body text-center">
-                            <i class="bi bi-shield-lock-fill fs-1"></i>
+                            <?php if (!$is_verified): ?><span class="badge bg-secondary float-end">&#x1F512;</span><?php endif; ?>
+                            <i class="bi bi-shield-lock-fill fs-1 <?= !$is_verified ? 'text-secondary' : '' ?>"></i>
                             <h4 class="mt-2 text-dark">Barangay Clearance</h4>
                         </div>
                     </div>
                 </div>
             </a>
         </div>
+
+        <!-- OPEN SERVICES (always accessible) -->
 
         <div class="col">
             <a href="resident_youth_profile.php?id_resident=<?= $userdetails['id_resident'];?>" class="text-decoration-none">
@@ -464,8 +518,10 @@
                 <div class="zoom1 h-100">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
+                            <?php if (!$is_verified): ?><span class="badge bg-warning text-dark float-end">Action Needed</span><?php endif; ?>
                             <i class="bi bi-chat-dots-fill fs-1"></i>
                             <h4 class="mt-2 text-dark">Messages</h4>
+                            <?php if (!$is_verified): ?><small class="text-warning fw-bold">Upload ID here</small><?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -487,6 +543,36 @@
 
     </div>
 </div>
+
+<!-- Verification Required Modal -->
+<div class="modal fade" id="verifyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header bg-warning text-dark rounded-top-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-lock-fill me-2"></i>Verification Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div style="font-size: 3rem;">&#x1F512;</div>
+                <h5 class="mt-2 mb-3">You need to verify your account first</h5>
+                <p class="text-muted">Please go to <strong>Messages</strong> and upload a valid government-issued ID. Once the admin approves your ID, you will have full access to all services.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <a href="resident_messages.php?id_resident=<?= $userdetails['id_resident'];?>&upload_id=1" class="btn btn-warning fw-bold rounded-pill px-4">
+                    <i class="bi bi-upload me-2"></i>Upload ID
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showVerifyAlert() {
+    var modal = new bootstrap.Modal(document.getElementById('verifyModal'));
+    modal.show();
+}
+</script>
 
         </section>
 
@@ -649,3 +735,4 @@
         <script src="../BarangaySystem/bootstrap/js/bootstrap.bundle.js" type="text/javascript"> </script>
     </body>
 </html>
+

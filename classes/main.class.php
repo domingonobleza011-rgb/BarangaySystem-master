@@ -482,6 +482,157 @@ public function deleteMessage($id_admin_msg) {
         die("Database Error: " . $e->getMessage());
     }
 }
+
+// =============================================
+// RESIDENT ID VERIFICATION FUNCTIONS
+// =============================================
+
+/**
+ * Upload a valid ID file from a resident and store record in tbl_id_uploads
+ */
+public function uploadValidID($id_resident, $file_name, $original_name, $file_type, $message_note = '') {
+    try {
+        $connection = $this->openConn();
+        $sql = "INSERT INTO tbl_id_uploads (id_resident, file_name, original_name, file_type, message_note, upload_date, status)
+                VALUES (?, ?, ?, ?, ?, NOW(), 'pending')";
+        $stmt = $connection->prepare($sql);
+        return $stmt->execute([$id_resident, $file_name, $original_name, $file_type, $message_note]);
+    } catch (PDOException $e) {
+        error_log("uploadValidID Error: " . $e->getMessage());
+        return false;
+    }
+}
+public function delete_upload_record($id_upload) {
+    try {
+        $con = $this->openConn();
+        
+        // Optional: Get the filename first to delete it from the folder
+        $stmt = $con->prepare("SELECT file_name FROM tbl_id_uploads WHERE id_upload = ?");
+        $stmt->execute([$id_upload]);
+        $file = $stmt->fetch();
+        
+        if ($file) {
+            $path = "uploads/valid_ids/" . $file['file_name'];
+            if (file_exists($path)) {
+                unlink($path); // This deletes the physical file
+            }
+        }
+
+        // Delete the record from the database
+        $sql = "DELETE FROM tbl_id_uploads WHERE id_upload = ?";
+        $stmt = $con->prepare($sql);
+        return $stmt->execute([$id_upload]);
+        
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get all pending ID uploads (for admin panel)
+ */
+public function getPendingIDUploads() {
+    try {
+        $connection = $this->openConn();
+        $sql = "SELECT u.*, r.fname, r.lname, r.email, r.phone_number
+                FROM tbl_id_uploads u
+                JOIN tbl_resident r ON u.id_resident = r.id_resident
+                ORDER BY u.upload_date DESC";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("getPendingIDUploads Error: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get all ID uploads for a specific resident
+ */
+public function getResidentIDUploads($id_resident) {
+    try {
+        $connection = $this->openConn();
+        $sql = "SELECT * FROM tbl_id_uploads WHERE id_resident = ? ORDER BY upload_date DESC";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute([$id_resident]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+/**
+ * Admin approves a resident — sets is_verified = 1 and marks the upload as approved
+ */
+public function approveResidentVerification($id_resident, $id_upload, $admin_name) {
+    try {
+        $connection = $this->openConn();
+
+        // 1. Update the resident's verified status
+        $sql1 = "UPDATE tbl_resident SET is_verified = 1, verified_at = NOW(), verified_by = ? WHERE id_resident = ?";
+        $stmt1 = $connection->prepare($sql1);
+        $stmt1->execute([$admin_name, $id_resident]);
+
+        // 2. Mark this upload as approved
+        $sql2 = "UPDATE tbl_id_uploads SET status = 'approved' WHERE id_upload = ?";
+        $stmt2 = $connection->prepare($sql2);
+        $stmt2->execute([$id_upload]);
+
+        // 3. Notify the resident via their messages
+        $notice = "✅ Your account has been verified! You can now request barangay certificates and other services.";
+        $sql3 = "INSERT INTO resident_messages (id_resident, message_text, date_sent) VALUES (?, ?, NOW())";
+        $stmt3 = $connection->prepare($sql3);
+        $stmt3->execute([$id_resident, $notice]);
+
+        return true;
+    } catch (PDOException $e) {
+        error_log("approveResidentVerification Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Admin rejects a resident's ID upload
+ */
+public function rejectResidentVerification($id_resident, $id_upload, $admin_name, $reason = '') {
+    try {
+        $connection = $this->openConn();
+
+        // Mark the upload as rejected
+        $sql1 = "UPDATE tbl_id_uploads SET status = 'rejected' WHERE id_upload = ?";
+        $stmt1 = $connection->prepare($sql1);
+        $stmt1->execute([$id_upload]);
+
+        // Notify the resident
+        $notice = "❌ Your valid ID submission was rejected." . ($reason ? " Reason: " . $reason : "") . " Please upload a clearer or valid government-issued ID.";
+        $sql2 = "INSERT INTO resident_messages (id_resident, message_text, date_sent) VALUES (?, ?, NOW())";
+        $stmt2 = $connection->prepare($sql2);
+        $stmt2->execute([$id_resident, $notice]);
+
+        return true;
+    } catch (PDOException $e) {
+        error_log("rejectResidentVerification Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Check if a resident is verified
+ */
+public function isResidentVerified($id_resident) {
+    try {
+        $connection = $this->openConn();
+        $sql = "SELECT is_verified FROM tbl_resident WHERE id_resident = ?";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute([$id_resident]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row && $row['is_verified'] == 1;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
     //------------------------------------------ Certificate of Residency CRUD -----------------------------------------------
     public function get_single_certofres($id_resident){
 
